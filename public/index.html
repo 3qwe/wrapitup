@@ -404,6 +404,7 @@
     }
     .gift-text strong { display: block; font-weight: 500; font-size: 0.97rem; color: var(--dark); margin-bottom: 3px; }
     .gift-text span { font-size: 0.85rem; color: #6a5520; line-height: 1.55; }
+    .gift-price { font-style: normal; font-size: 0.8rem; font-weight: 500; color: var(--yellow-deep); margin-left: 4px; white-space: nowrap; }
 
     /* ── FOOTER ── */
     footer {
@@ -668,34 +669,18 @@
     btn.classList.add('loading');
     btn.disabled = true;
 
-    const prompt = `You are a thoughtful gift advisor. Generate 6 unique, personalised, ethical gift ideas for the following person:
-${name ? `- Name: ${name}` : ''}
-- Age group: ${age}
-- Gender: ${gender || 'not specified'}
-- Occasion: ${occasion}
-- Budget: up to £${budget}
-- Interests: ${interests.length ? interests.join(', ') : 'not specified'}
-${extra ? `- Additional info: ${extra}` : ''}
-
-For each gift, provide a SHORT name (under 6 words) and a ONE sentence explanation of why it suits this person. Keep suggestions thoughtful, practical, and within the budget.
-
-Respond ONLY as a valid JSON array, no markdown, like:
-[{"name":"Gift name","reason":"Why this suits them."},...]`;
-
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetch('/api/gift-ideas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
-        })
+        body: JSON.stringify({ name, age, gender, occasion, budget: Number(budget), interests, extra })
       });
 
-      const data = await res.json();
-      const text = data.content?.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-      const gifts = JSON.parse(text);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !Array.isArray(data.gifts)) {
+        throw new Error(data.error || 'Something went wrong generating ideas. Please try again!');
+      }
+      const gifts = data.gifts;
 
       const list = document.getElementById('gift-list');
       list.innerHTML = '';
@@ -703,12 +688,23 @@ Respond ONLY as a valid JSON array, no markdown, like:
         const li = document.createElement('li');
         li.className = 'gift-item';
         li.style.animationDelay = `${i * 80}ms`;
-        li.innerHTML = `
-          <div class="gift-num">${i + 1}</div>
-          <div class="gift-text">
-            <strong>${g.name}</strong>
-            <span>${g.reason}</span>
-          </div>`;
+        const num = document.createElement('div');
+        num.className = 'gift-num';
+        num.textContent = i + 1;
+        const text = document.createElement('div');
+        text.className = 'gift-text';
+        const strong = document.createElement('strong');
+        strong.textContent = g.name;
+        if (g.price) {
+          const price = document.createElement('em');
+          price.className = 'gift-price';
+          price.textContent = g.price;
+          strong.append(' ', price);
+        }
+        const reason = document.createElement('span');
+        reason.textContent = g.reason;
+        text.append(strong, reason);
+        li.append(num, text);
         list.appendChild(li);
       });
 
@@ -718,7 +714,7 @@ Respond ONLY as a valid JSON array, no markdown, like:
       resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     } catch (err) {
-      alert('Something went wrong generating ideas. Please try again!');
+      alert(err.message || 'Something went wrong generating ideas. Please try again!');
       console.error(err);
     } finally {
       btn.classList.remove('loading');

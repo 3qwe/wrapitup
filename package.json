@@ -1,0 +1,9 @@
+{
+  "name": "wrapitup",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.12.0"
+  }
+}
