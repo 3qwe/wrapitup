@@ -243,18 +243,112 @@
     .interest-chip.active { border-color: var(--yellow-warm); background: var(--yellow-light); color: var(--dark); }
     .interest-chip:hover:not(.active) { border-color: var(--yellow-mid); }
 
-    .budget-row { display: flex; align-items: center; gap: 14px; }
-    .budget-row input[type=range] {
-      flex: 1; padding: 0; border: none; background: transparent;
-      accent-color: var(--yellow-warm);
-      box-shadow: none;
+    /* ── Budget slider ── */
+    .budget-box {
+      padding: 18px 20px 14px;
+      border: 2px solid #ede8d0;
+      border-radius: 16px;
+      background: #fffef5;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .budget-row input[type=range]:focus { box-shadow: none; }
+    .budget-box:focus-within {
+      border-color: var(--yellow-warm);
+      box-shadow: 0 0 0 4px rgba(255,171,0,0.12);
+    }
+    .budget-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 12px; margin-bottom: 16px;
+    }
+    .budget-hint { font-size: 0.82rem; color: #8a7340; }
     .budget-val {
       font-family: 'Playfair Display', serif;
-      font-size: 1.1rem; font-weight: 700;
-      color: var(--yellow-deep); min-width: 64px; text-align: right;
+      font-size: 1.5rem; font-weight: 700; line-height: 1;
+      color: var(--yellow-deep);
+      white-space: nowrap;
     }
+    .budget-val small {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 500;
+      color: #8a7340; margin-right: 4px;
+    }
+
+    .form-row input[type=range].budget-range {
+      --fill: 10%;
+      -webkit-appearance: none; appearance: none;
+      display: block; width: 100%; height: 28px;
+      padding: 0; margin: 0;
+      border: none; border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      cursor: pointer;
+      touch-action: pan-y;
+    }
+    .form-row input[type=range].budget-range:focus { box-shadow: none; outline: none; }
+
+    /* Track – WebKit/Blink */
+    .budget-range::-webkit-slider-runnable-track {
+      height: 10px; border-radius: 100px;
+      background: linear-gradient(90deg, var(--yellow-mid) 0%, var(--yellow-warm) var(--fill), #ede8d0 var(--fill), #ede8d0 100%);
+      box-shadow: inset 0 1px 2px rgba(26,18,0,0.08);
+    }
+    /* Thumb – WebKit/Blink */
+    .budget-range::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 26px; height: 26px; margin-top: -8px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 3px solid var(--yellow-warm);
+      box-shadow: 0 3px 10px rgba(255,111,0,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .budget-range:hover::-webkit-slider-thumb { transform: scale(1.08); }
+    .budget-range:active::-webkit-slider-thumb { transform: scale(1.15); background: var(--yellow-light); }
+    .budget-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(255,171,0,0.25), 0 3px 10px rgba(255,111,0,0.35); }
+
+    /* Track – Firefox */
+    .budget-range::-moz-range-track {
+      height: 10px; border-radius: 100px; border: none;
+      background: #ede8d0;
+      box-shadow: inset 0 1px 2px rgba(26,18,0,0.08);
+    }
+    .budget-range::-moz-range-progress {
+      height: 10px; border-radius: 100px;
+      background: linear-gradient(90deg, var(--yellow-mid), var(--yellow-warm));
+    }
+    /* Thumb – Firefox */
+    .budget-range::-moz-range-thumb {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 3px solid var(--yellow-warm);
+      box-shadow: 0 3px 10px rgba(255,111,0,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .budget-range:hover::-moz-range-thumb { transform: scale(1.08); }
+    .budget-range:active::-moz-range-thumb { transform: scale(1.15); background: var(--yellow-light); }
+    .budget-range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 6px rgba(255,171,0,0.25), 0 3px 10px rgba(255,111,0,0.35); }
+
+    .budget-scale {
+      display: flex; justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.75rem; color: #a08a50;
+    }
+
+    .budget-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .budget-preset {
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 2px solid #ede8d0;
+      background: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--dark-mid);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .budget-preset:hover:not(.active) { border-color: var(--yellow-mid); }
+    .budget-preset.active { border-color: var(--yellow-warm); background: var(--yellow-light); color: var(--dark); }
+    .budget-preset:focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(255,171,0,0.2); }
 
     .submit-btn {
       width: 100%; padding: 16px;
@@ -310,6 +404,7 @@
     }
     .gift-text strong { display: block; font-weight: 500; font-size: 0.97rem; color: var(--dark); margin-bottom: 3px; }
     .gift-text span { font-size: 0.85rem; color: #6a5520; line-height: 1.55; }
+    .gift-price { font-style: normal; font-size: 0.8rem; font-weight: 500; color: var(--yellow-deep); margin-left: 4px; white-space: nowrap; }
 
     /* ── FOOTER ── */
     footer {
@@ -478,10 +573,21 @@
     </div>
 
     <div class="form-row">
-      <label>Budget</label>
-      <div class="budget-row">
-        <input type="range" id="f-budget" min="5" max="500" step="5" value="50" />
-        <div class="budget-val" id="budget-display">£50</div>
+      <label for="f-budget">Budget</label>
+      <div class="budget-box">
+        <div class="budget-head">
+          <span class="budget-hint">Drag the slider or pick a preset</span>
+          <div class="budget-val" aria-hidden="true"><small>up to</small><span id="budget-display">£50</span></div>
+        </div>
+        <input type="range" class="budget-range" id="f-budget" min="5" max="500" step="5" value="50" aria-valuetext="Up to £50" />
+        <div class="budget-scale" aria-hidden="true"><span>£5</span><span>£250</span><span>£500</span></div>
+        <div class="budget-presets" role="group" aria-label="Budget presets">
+          <button type="button" class="budget-preset" data-val="20">£20</button>
+          <button type="button" class="budget-preset" data-val="50">£50</button>
+          <button type="button" class="budget-preset" data-val="100">£100</button>
+          <button type="button" class="budget-preset" data-val="250">£250</button>
+          <button type="button" class="budget-preset" data-val="500">£500</button>
+        </div>
       </div>
     </div>
 
@@ -516,9 +622,22 @@
   // ── Budget slider ──
   const budgetSlider = document.getElementById('f-budget');
   const budgetDisplay = document.getElementById('budget-display');
-  budgetSlider.addEventListener('input', () => {
-    budgetDisplay.textContent = '£' + budgetSlider.value;
-  });
+  const budgetPresets = document.querySelectorAll('.budget-preset');
+  function updateBudget() {
+    const min = Number(budgetSlider.min), max = Number(budgetSlider.max), val = Number(budgetSlider.value);
+    const pct = ((val - min) / (max - min)) * 100;
+    budgetSlider.style.setProperty('--fill', pct + '%');
+    budgetDisplay.textContent = '£' + val;
+    budgetSlider.setAttribute('aria-valuetext', 'Up to £' + val);
+    budgetPresets.forEach(p => p.classList.toggle('active', Number(p.dataset.val) === val));
+  }
+  budgetSlider.addEventListener('input', updateBudget);
+  budgetSlider.addEventListener('change', updateBudget);
+  budgetPresets.forEach(p => p.addEventListener('click', () => {
+    budgetSlider.value = p.dataset.val;
+    updateBudget();
+  }));
+  updateBudget();
 
   // ── Scroll reveal for cards ──
   const observer = new IntersectionObserver((entries) => {
@@ -550,34 +669,18 @@
     btn.classList.add('loading');
     btn.disabled = true;
 
-    const prompt = `You are a thoughtful gift advisor. Generate 6 unique, personalised, ethical gift ideas for the following person:
-${name ? `- Name: ${name}` : ''}
-- Age group: ${age}
-- Gender: ${gender || 'not specified'}
-- Occasion: ${occasion}
-- Budget: up to £${budget}
-- Interests: ${interests.length ? interests.join(', ') : 'not specified'}
-${extra ? `- Additional info: ${extra}` : ''}
-
-For each gift, provide a SHORT name (under 6 words) and a ONE sentence explanation of why it suits this person. Keep suggestions thoughtful, practical, and within the budget.
-
-Respond ONLY as a valid JSON array, no markdown, like:
-[{"name":"Gift name","reason":"Why this suits them."},...]`;
-
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetch('/api/gift-ideas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
-        })
+        body: JSON.stringify({ name, age, gender, occasion, budget: Number(budget), interests, extra })
       });
 
-      const data = await res.json();
-      const text = data.content?.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-      const gifts = JSON.parse(text);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !Array.isArray(data.gifts)) {
+        throw new Error(data.error || 'Something went wrong generating ideas. Please try again!');
+      }
+      const gifts = data.gifts;
 
       const list = document.getElementById('gift-list');
       list.innerHTML = '';
@@ -585,12 +688,23 @@ Respond ONLY as a valid JSON array, no markdown, like:
         const li = document.createElement('li');
         li.className = 'gift-item';
         li.style.animationDelay = `${i * 80}ms`;
-        li.innerHTML = `
-          <div class="gift-num">${i + 1}</div>
-          <div class="gift-text">
-            <strong>${g.name}</strong>
-            <span>${g.reason}</span>
-          </div>`;
+        const num = document.createElement('div');
+        num.className = 'gift-num';
+        num.textContent = i + 1;
+        const text = document.createElement('div');
+        text.className = 'gift-text';
+        const strong = document.createElement('strong');
+        strong.textContent = g.name;
+        if (g.price) {
+          const price = document.createElement('em');
+          price.className = 'gift-price';
+          price.textContent = g.price;
+          strong.append(' ', price);
+        }
+        const reason = document.createElement('span');
+        reason.textContent = g.reason;
+        text.append(strong, reason);
+        li.append(num, text);
         list.appendChild(li);
       });
 
@@ -600,7 +714,7 @@ Respond ONLY as a valid JSON array, no markdown, like:
       resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     } catch (err) {
-      alert('Something went wrong generating ideas. Please try again!');
+      alert(err.message || 'Something went wrong generating ideas. Please try again!');
       console.error(err);
     } finally {
       btn.classList.remove('loading');
